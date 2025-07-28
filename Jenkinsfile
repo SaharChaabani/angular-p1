@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Checkout code') {
             steps {
-                git 'https://github.com/SaharChaabani/angular-p1.git'
+                git branch: 'main', url: 'https://github.com/SaharChaabani/angular-p1.git'
             }
         }
 
