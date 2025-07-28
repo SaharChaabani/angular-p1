@@ -1,8 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker { image 'node:18' }
+    }
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub') // à créer dans Jenkins
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub')  // ID des credentials DockerHub dans Jenkins
         IMAGE_NAME = 'saharchaabani/p1'
     }
 
