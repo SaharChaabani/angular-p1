@@ -2,36 +2,56 @@ pipeline {
     agent any
 
     environment {
-        IMAGE = "saharchaabani/p1:latest"
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub') // à créer dans Jenkins
+        IMAGE_NAME = 'saharchaabani/p1'
     }
 
     stages {
+
         stage('Cloner le repo') {
             steps {
-                git 'https://github.com/SaharChaabani/angular-p1.git'
+                git url: 'https://github.com/SaharChaabani/angular-p1.git', branch: 'main'
+            }
+        }
+
+        stage('Installer les dépendances') {
+            steps {
+                sh 'npm install'
+            }
+        }
+
+        stage('Build Angular') {
+            steps {
+                sh 'npm run build --prod'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $IMAGE .'
-            }
-        }
-
-        stage('Push Docker Image') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-                    sh 'echo $PASS | docker login -u $USER --password-stdin'
-                    sh 'docker push $IMAGE'
+                script {
+                    sh "docker build -t ${IMAGE_NAME}:latest ."
                 }
             }
         }
 
-        stage('Deploy to Kubernetes') {
+        stage('Push vers DockerHub') {
             steps {
-                sh 'kubectl apply -f k8s/deployment.yaml'
-                sh 'kubectl apply -f k8s/service.yaml'
+                script {
+                    docker.withRegistry('', DOCKERHUB_CREDENTIALS) {
+                        sh "docker push ${IMAGE_NAME}:latest"
+                    }
+                }
             }
+        }
+
+    }
+
+    post {
+        success {
+            echo 'Pipeline terminé avec succès !'
+        }
+        failure {
+            echo 'Le pipeline a échoué.'
         }
     }
 }
