@@ -7,6 +7,13 @@ pipeline {
                 git url: 'https://github.com/SaharChaabani/angular-p1.git', branch: 'main'
             }
         }
+        
+        stage('Clean workspace') {
+            steps {
+                sh 'rm -rf node_modules'
+                sh 'npm cache clean --force'
+            }
+        }
 
         stage('Install dependencies') {
             steps {
