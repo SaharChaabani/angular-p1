@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: angular-p1-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: angular-p1
+  template:
+    metadata:
+      labels:
+        app: angular-p1
+    spec:
+      containers:
+      - name: angular-p1
+        image: saharchaabani/p1:latest
+        ports:
+        - containerPort: 80
