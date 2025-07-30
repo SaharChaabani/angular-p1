@@ -40,13 +40,23 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    sh "sed -i 's|saharchaabani1/p1:latest|${IMAGE_NAME}:${IMAGE_TAG}|g' deployment.yaml"
+                    sh 'kubectl apply -f deployment.yaml'
+                }
+            }
+        }
     }
+
     post {
         success {
-            echo "✅ Build and push successful for tag ${IMAGE_TAG}"
+            echo "✅ Build, push and deployment done for tag ${IMAGE_TAG}"
         }
         failure {
-            echo "❌ Build or push failed!"
+            echo "❌ Something failed during pipeline execution"
         }
     }
 }
